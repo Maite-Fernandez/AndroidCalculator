@@ -7,6 +7,7 @@ public class Calculator implements CalculatorInterface{
     private ArrayList<Integer> operations= new ArrayList<Integer>();
     private ArrayList<Double> numbers= new ArrayList<Double>();
     private double result=0;
+    private boolean MathError=false;
 
     //Method to add an Operation
     @Override
@@ -17,51 +18,51 @@ public class Calculator implements CalculatorInterface{
     /*Method to delete an Operation that throws and exception when
     there are no operations in the list to remove.*/
     @Override
-    public void delOperation(int position) throws IsEmptyException {
+    public void delOperation(int position) {
         if(operations.size()>0) {
             operations.remove(position);
-        }
-        else{
-            throw new IsEmptyException();
         }
     }
     /*Method to delete a Number that throws and exception when
     there are no operations in the list to remove.*/
     @Override
-    public void delNumber(int position) throws IsEmptyException{
+    public void delNumber(int position){
         if(numbers.size()>0){
-        numbers.remove(position);
+            numbers.remove(position);
         }
-        else{
-            throw new IsEmptyException();
-         }
     }
+
     //Method to solve a chain of operations.
     @Override
-    public double getResult() throws MathErrorException {
+    public String getResult() {
         int c=0;
         boolean second=false;
         boolean third=false;
+        String total;
 
         while(c<operations.size()){
             int op=operations.get(c);
             if(op<4){
-                switch(op){
-                    case 1:
-                        result=Math.sin(Math.toRadians(numbers.get(c)));
-                        break;
-                    case 2:
-                        result=Math.cos(Math.toRadians(numbers.get(c)));
-                        break;
-                    case 3:
-                        result=Math.tan(Math.toRadians(numbers.get(c)));
-                        break;
-                }
+                if (c < numbers.size()) {
+                    switch (op) {
+                        case 1:
+                            result = Math.sin(Math.toRadians(numbers.get(c)));
+                            break;
+                        case 2:
+                            result = Math.cos(Math.toRadians(numbers.get(c)));
+                            break;
+                        case 3:
+                            result = Math.tan(Math.toRadians(numbers.get(c)));
+                            break;
+                    }
 
                     numbers.remove(c);
-                    numbers.add(c,result);
+                    numbers.add(c, result);
                     operations.remove(c);
-                    c-=1;
+                    c -= 1;
+                }else{
+                    MathError=true;
+                }
             }
             else {
                 if (op < 6) {
@@ -95,7 +96,7 @@ public class Calculator implements CalculatorInterface{
                         operations.remove(c);
                         c -= 1;
                     } else {
-                        throw new MathErrorException();
+                        MathError=true;
                     }
                 }
                 c+=1;
@@ -124,16 +125,19 @@ public class Calculator implements CalculatorInterface{
                     c-=1;
                 }
                 else{
-                    throw new MathErrorException();
+                    MathError=true;
                 }
 
                 c+=1;
             }
 
         }
-
-        result=numbers.get(0);
-        return result;
+        if(MathError){
+            return "Math Error! Clear and try again.";
+        }
+        else
+            result= numbers.get(0);
+            return String.valueOf(result);
     }
     //Method to clear calculator
     @Override
@@ -143,3 +147,4 @@ public class Calculator implements CalculatorInterface{
     }
 
 }
+
